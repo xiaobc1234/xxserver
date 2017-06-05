@@ -173,12 +173,12 @@ public class RandomGUIDUtil extends Object
     public static final int RANDOM_12 = 12;
     public static final int RANDOM_32 = 32;
 
-    public static void main(String[] args)
-    {
-        System.out.println(RandomGUIDUtil.getGUID(RANDOM_4));
-        System.out.println(RandomGUIDUtil.getGUID(RANDOM_8));
-        System.out.println(RandomGUIDUtil.getGUID(RANDOM_12));
-        System.out.println(RandomGUIDUtil.getGUID(RANDOM_32));
-        System.out.println(RandomGUIDUtil.getRawGUID());
-    }
+//    public static void main(String[] args)
+//    {
+//        System.out.println(RandomGUIDUtil.getGUID(RANDOM_4));
+//        System.out.println(RandomGUIDUtil.getGUID(RANDOM_8));
+//        System.out.println(RandomGUIDUtil.getGUID(RANDOM_12));
+//        System.out.println(RandomGUIDUtil.getGUID(RANDOM_32));
+//        System.out.println(RandomGUIDUtil.getRawGUID());
+//    }
 }
