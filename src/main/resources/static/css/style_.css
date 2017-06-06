@@ -1,5 +1,6 @@
 
 
-.select_all{
+.select_all,.devices #devicesModel .insert_task .list-group-item,.tasksQueue #tasksQueueModel .insert_tasksQueue .list-group-item{
     cursor: pointer;
 }
+

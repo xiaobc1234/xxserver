@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,7 +47,7 @@
 
                 <li class="menu-list"><a href="#"><i class="fa fa-th-list"></i> <span>主菜单</span></a>
                     <ul class="sub-menu-list">
-                        <li><a href="/games/table">应用列表</a></li>
+                        <li><a href="/games/games">应用列表</a></li>
                     </ul>
                 </li>
 
@@ -80,7 +81,7 @@
         <!-- page heading start-->
         <div class="page-heading">
             <h3>
-                Editable Table
+                $gamesAlias
             </h3>
             <ul class="breadcrumb">
                 <li class="active">设备列表</li>
@@ -103,7 +104,7 @@
                             <div class="adv-table editable-table ">
                                 <div class="clearfix" style="margin-bottom: 10px;">
                                     <div class="btn-group">
-                                        <a href="#devicesModel" id="add_games" data-toggle="modal" class="btn btn-primary">
+                                        <a href="#devicesModel" gamesalias="$gamesAlias" id="add_devices_taks" data-toggle="modal" class="btn btn-primary">
                                             批量插入任务<i class="fa fa-plus"></i>
                                         </a>
                                     </div>
@@ -132,7 +133,7 @@
                                             <td>$item.alias</td>
                                             <td>$item.gamesAlias</td>
                                             <td>
-                                                <a class="device_list" href="/games/tasks/$item.deviceId">设备任务列表</a> |
+                                                <a class="device_list" href="/games/tasksQueue/$gamesAlias/$item.deviceId">设备任务列表</a> |
                                                 <a class="task_list" href="/games/tasksLog/$item.deviceId">设备任务执行日志</a> |
                                                 <a class="edit_" href="#devicesModelEdit" data-toggle="modal">修改</a> |
                                                 <a class="delete" href="javascript:;">删除</a>
@@ -153,24 +154,22 @@
                                                 <h4 class="modal-title">批量添加任务队列</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="insert_type">
-                                                    <div class="btn-group">
-                                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                            插入类型 <span class="caret"></span>
-                                                        </button>
-                                                        <ul class="dropdown-menu">
-                                                            <li><a href="#">队首插入</a></li>
-                                                            <li><a href="#">队尾插入</a></li>
-                                                        </ul>
-                                                    </div>
+                                                <div class="insert_type_box" style="margin: 10px 0;">
+                                                    插入类型:
+                                                    <select name="insert_type">
+                                                        <option value="1" >队首</option>
+                                                        <option value="2" selected>队尾</option>
+                                                    </select>
                                                 </div>
 
-
+                                                <ul class="list-group insert_task">
+                                                    <li class="list-group-item" task_id="1">任务名称-任务方法</li>
+                                                </ul>
 
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                                                <button type="button" class="btn btn-success add_device_task">确定</button>
+##                                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+##                                                <button type="button" class="btn btn-success add_device_task">确定</button>
                                             </div>
                                         </div>
                                     </div>

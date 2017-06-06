@@ -19,4 +19,6 @@ public interface DevicesRepository extends JpaRepository<Devices,Integer>,JpaSpe
 
     List<Devices> findByGamesAlias(String gamesAlias);
 
+    List<Devices> findByDeviceId(String deviceId);
+
 }
