@@ -1,13 +1,7 @@
 package com.bc.xx.controller;
 
-import com.bc.xx.model.Devices;
-import com.bc.xx.model.Games;
-import com.bc.xx.model.Tasks;
-import com.bc.xx.model.TasksQueue;
-import com.bc.xx.repository.DevicesRepository;
-import com.bc.xx.repository.GamesRepository;
-import com.bc.xx.repository.TasksQueueRepository;
-import com.bc.xx.repository.TasksRepository;
+import com.bc.xx.model.*;
+import com.bc.xx.repository.*;
 import com.bc.xx.repository.specification.GamesSpecifications;
 import com.bc.xx.repository.specification.TasksQueueSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +36,8 @@ public class GamesController extends BaseController {
     private DevicesRepository devicesRepository;
     @Autowired
     private TasksRepository tasksRepository;
+    @Autowired
+    private TasksLogRepository tasksLogRepository;
     @Autowired
     private TasksQueueRepository tasksQueueRepository;
 
@@ -330,6 +326,24 @@ public class GamesController extends BaseController {
         tasksQueueRepository.save(tasksQueue);
         return this.buildResponse(RESPONSE_OK, null);
     }
+
+    //----------tasksLog-------------
+
+    @RequestMapping(method = RequestMethod.GET, value = "/tasksLog/{devicesId}")
+    public String tasksLog(@PathVariable String devicesId, ModelMap map) {
+
+        List<TasksLog> logs = tasksLogRepository.findByDeviceIdOrderByCreateDateDesc(devicesId);
+        map.put("list",logs);
+
+        List<Devices> devices = devicesRepository.findByDeviceId(devicesId);
+        if(devices!=null && devices.size()>0){
+            Devices dev=  devices.get(0);
+            map.put("devicesAlias",dev.getAlias());
+            map.put("devicesId",devicesId);
+        }
+        return "html/tasksLog";
+    }
+
 
 
 }

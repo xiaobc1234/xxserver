@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Games
@@ -29,6 +30,8 @@ public class TasksLog implements Serializable {
     private String deviceId;
     //设备别名
     private String deviceAlias;
+    //创建时间
+    private Date createDate;
 
 
     public Integer getId() {
@@ -70,5 +73,13 @@ public class TasksLog implements Serializable {
 
     public void setDeviceAlias(String deviceAlias) {
         this.deviceAlias = deviceAlias;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 }
