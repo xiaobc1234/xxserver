@@ -1,12 +1,10 @@
 package com.bc.xx.controller;
 
 import com.bc.xx.model.Devices;
+import com.bc.xx.model.Tasks;
 import com.bc.xx.model.TasksLog;
 import com.bc.xx.model.TasksQueue;
-import com.bc.xx.repository.DevicesRepository;
-import com.bc.xx.repository.GamesRepository;
-import com.bc.xx.repository.TasksLogRepository;
-import com.bc.xx.repository.TasksQueueRepository;
+import com.bc.xx.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -38,6 +36,8 @@ public class ClientController extends BaseController{
     private TasksLogRepository tasksLogRepository;
     @Autowired
     private TasksQueueRepository tasksQueueRepository;
+    @Autowired
+    private TasksRepository tasksRepository;
 
 
     /**
@@ -51,8 +51,13 @@ public class ClientController extends BaseController{
     public Map<String,Object> tasksQueue(@PathVariable String devicesId, ModelMap map) {
         List<TasksQueue> list = tasksQueueRepository.findByDeviceIdOrderBySortAsc(devicesId);
         TasksQueue tq = null;
+        Tasks t = null;
         if(list!=null && list.size()>0){
             tq = list.get(0);
+            t= tasksRepository.findOne(tq.getTaskId());
+            if(t==null){
+                return this.buildResponse(RESPONSE_ERROR, "没有对应的任务");
+            }
         }
         // 将传过去的任务转移到日志中去
         TasksLog log = new TasksLog();
@@ -65,7 +70,7 @@ public class ClientController extends BaseController{
         //删除任务队列该节点
         tasksQueueRepository.delete(tq.getId());
 
-        return this.buildResponse(RESPONSE_OK, tq);
+        return this.buildResponse(RESPONSE_OK, t.getMethodName());
     }
 
     /**
