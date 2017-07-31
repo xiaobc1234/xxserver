@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -40,6 +39,8 @@ public class GamesController extends BaseController {
     private TasksLogRepository tasksLogRepository;
     @Autowired
     private TasksQueueRepository tasksQueueRepository;
+    @Autowired
+    private AuthRepository authRepository;
 
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public String getGamesList(ModelMap map) {
@@ -62,7 +63,10 @@ public class GamesController extends BaseController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/games")
-    public String games(ModelMap map) {
+    public String games(HttpServletRequest req,ModelMap map) {
+        if (!checkLogin(req)) {
+            return "html/login";
+        }
         Specification<Games> specification = Specifications.where(GamesSpecifications.filterByDelete(0));
         List<Games> list = gamesRepository.findAll(specification, new Sort(new Sort.Order(Sort.Direction.DESC, "id")));
         map.put("list", list);
@@ -72,6 +76,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/addGames")
     @ResponseBody
     public Map<String, Object> addGames(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         Games games = new Games();
         games.setAppName(req.getParameter("gamesName"));
         games.setAlias(req.getParameter("alias"));
@@ -84,6 +91,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/editGames")
     @ResponseBody
     public Map<String, Object> editGames(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         String id = req.getParameter("id");
         if (id == null || "".equals(id)) {
             return this.buildResponse(RESPONSE_ERROR, "更新数据无效");
@@ -99,6 +109,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/deleteGames")
     @ResponseBody
     public Map<String, Object> deleteGames(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         Games games = gamesRepository.findOne(Integer.parseInt(req.getParameter("id")));
         games.setDelFlag(1);
         gamesRepository.save(games);
@@ -108,7 +121,10 @@ public class GamesController extends BaseController {
     //----------devices-------------
 
     @RequestMapping(method = RequestMethod.GET, value = "/devices/{gamesAlias}")
-    public String devices(@PathVariable String gamesAlias, ModelMap map) {
+    public String devices(HttpServletRequest req,@PathVariable String gamesAlias, ModelMap map) {
+        if (!checkLogin(req)) {
+            return "html/login";
+        }
         List<Devices> list = devicesRepository.findByGamesAlias(gamesAlias);
         map.put("list", list);
         map.put("gamesAlias", gamesAlias);
@@ -118,6 +134,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/deleteDevices")
     @ResponseBody
     public Map<String, Object> deleteDevices(HttpServletRequest req) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         devicesRepository.delete(Integer.parseInt(req.getParameter("id")));
         return this.buildResponse(RESPONSE_OK, null);
     }
@@ -125,6 +144,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/editDevices")
     @ResponseBody
     public Map<String, Object> editDevices(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         String id = req.getParameter("id");
         if (id == null || "".equals(id)) {
             return this.buildResponse(RESPONSE_ERROR, "更新数据无效");
@@ -138,6 +160,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/insertDevicesTasks")
     @ResponseBody
     public Map<String, Object> insertDevicesTasks(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         String tasksId = req.getParameter("tasksId");
         String type = req.getParameter("type");//1表示队首，2表示队尾
         String devIds = req.getParameter("devIds");
@@ -189,6 +214,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/getTaskByGamesAlias")
     @ResponseBody
     public Map<String, Object> getTaskByGamesAlias(HttpServletRequest req) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         String gamesAlias = req.getParameter("gamesAlias");
         if (gamesAlias == null || "".equals(gamesAlias)) {
             return this.buildResponse(RESPONSE_ERROR, "查询条件无效");
@@ -206,8 +234,10 @@ public class GamesController extends BaseController {
     //----------tasks-------------
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasks/{gamesId}")
-    public String tasks(@PathVariable Integer gamesId, ModelMap map) {
-
+    public String tasks(HttpServletRequest req,@PathVariable Integer gamesId, ModelMap map) {
+        if (!checkLogin(req)) {
+            return "html/login";
+        }
         List<Tasks> list = tasksRepository.findByGamesIdAndDelFlag(gamesId, 0);
         map.put("list", list);
         Games games = gamesRepository.findOne(gamesId);
@@ -219,6 +249,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/deleteTasks")
     @ResponseBody
     public Map<String, Object> deleteTasks(HttpServletRequest req) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         Tasks tasks = tasksRepository.findOne(Integer.parseInt(req.getParameter("id")));
         tasks.setDelFlag(1);
         tasksRepository.save(tasks);
@@ -228,6 +261,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/addTasks")
     @ResponseBody
     public Map<String, Object> addTasks(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         Integer gamesId = Integer.parseInt(req.getParameter("gamesId"));
         Games games = gamesRepository.findOne(gamesId);
         Tasks obj = new Tasks();
@@ -243,6 +279,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/editTasks")
     @ResponseBody
     public Map<String, Object> editTasks(HttpServletRequest req, ModelMap map) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         String id = req.getParameter("id");
         if (id == null || "".equals(id)) {
             return this.buildResponse(RESPONSE_ERROR, "更新数据无效");
@@ -258,8 +297,10 @@ public class GamesController extends BaseController {
     //----------tasks-------------
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksQueue/{gamesAlias}/{devicesId}")
-    public String tasksQueue(@PathVariable String gamesAlias, @PathVariable String devicesId, ModelMap map) {
-
+    public String tasksQueue(HttpServletRequest req,@PathVariable String gamesAlias, @PathVariable String devicesId, ModelMap map) {
+        if (!checkLogin(req)) {
+            return "html/login";
+        }
         List<TasksQueue> list = tasksQueueRepository.findByDeviceIdOrderBySortAsc(devicesId);
         map.put("list", list);
         map.put("devicesId", devicesId);
@@ -274,6 +315,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/deleteTasksQueue")
     @ResponseBody
     public Map<String, Object> deleteTasksQueue(HttpServletRequest req) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         tasksQueueRepository.delete(Integer.parseInt(req.getParameter("id")));
         return this.buildResponse(RESPONSE_OK, null);
     }
@@ -281,6 +325,9 @@ public class GamesController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/addTasksQueue")
     @ResponseBody
     public Map<String, Object> addTasksQueue(HttpServletRequest req) {
+        if (!checkLogin(req)) {
+            return this.buildResponse(RESPONSE_ERROR, "请先登录");
+        }
         String tasksId = req.getParameter("tasksId");
         String type = req.getParameter("type");//1表示队首，2表示队尾
         String devicesId = req.getParameter("devicesId");
@@ -330,8 +377,10 @@ public class GamesController extends BaseController {
     //----------tasksLog-------------
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksLog/{devicesId}")
-    public String tasksLog(@PathVariable String devicesId, ModelMap map) {
-
+    public String tasksLog(HttpServletRequest req,@PathVariable String devicesId, ModelMap map) {
+        if (!checkLogin(req)) {
+            return "html/login";
+        }
         List<TasksLog> logs = tasksLogRepository.findByDeviceIdOrderByCreateDateDesc(devicesId);
         map.put("list",logs);
 
@@ -342,6 +391,69 @@ public class GamesController extends BaseController {
             map.put("devicesId",devicesId);
         }
         return "html/tasksLog";
+    }
+
+
+    /**
+     * 登录
+     *
+     * @return
+     */
+    @RequestMapping("/login")
+    @ResponseBody
+    public Map<String, Object> login(HttpServletRequest req) {
+        String username = req.getParameter("username").toString();
+        String password = req.getParameter("password").toString();
+        List<Auth> list = authRepository.findByUsernameAndPassword(username, password);
+        if (list != null && list.size() > 0) {
+            req.getSession().setAttribute("user", username);
+            return this.buildResponse();
+        } else {
+            return this.buildResponse(RESPONSE_ERROR, "账号密码错误！");
+        }
+    }
+
+
+    /**
+     * 设置密码
+     *
+     * @return
+     */
+    @RequestMapping("/resetPwd")
+    @ResponseBody
+    public Map<String, Object> resetPwd(HttpServletRequest req) {
+        String username = req.getParameter("username").toString();
+        String oldPassword = req.getParameter("oldPassword").toString();
+        String newPassword = req.getParameter("newPassword").toString();
+        String newPassword2 = req.getParameter("newPassword2").toString();
+        if (newPassword == null || newPassword.length() < 6 || newPassword2 == null || newPassword2.length() < 6) {
+            return this.buildResponse(RESPONSE_ERROR, "新密码长度应该大于6！");
+        }
+        if (!newPassword.equals(newPassword2)) {
+            return this.buildResponse(RESPONSE_ERROR, "新密码两次应该相同");
+        }
+
+        List<Auth> list = authRepository.findByUsernameAndPassword(username, oldPassword);
+        if (list != null && list.size() > 0) {
+            req.getSession().setAttribute("user", username);
+            Auth auth = list.get(0);
+            auth.setPassword(newPassword);
+            authRepository.save(auth);
+            return this.buildResponse();
+        } else {
+            return this.buildResponse(RESPONSE_ERROR, "账号密码错误！");
+        }
+    }
+
+    /**
+     * 登出
+     *
+     * @return
+     */
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest req) {
+        req.getSession().removeAttribute("user");
+        return "html/login";
     }
 
 

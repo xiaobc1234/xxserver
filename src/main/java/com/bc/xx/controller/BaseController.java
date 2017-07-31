@@ -1,5 +1,6 @@
 package com.bc.xx.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,15 @@ public class BaseController {
         resData.put("msg",msg);
         resData.put("data",data);
         return resData;
+    }
+
+    protected boolean checkLogin(HttpServletRequest req){
+        String user = (String) req.getSession().getAttribute("user");
+        if(user==null){
+            return false;
+        }else{
+            return true;
+        }
     }
 
 
